@@ -19,7 +19,7 @@ function App() {
     console.log('News Bot Desktop App initialized');
     
     // Check if we're running in Electron
-    const isElectron = window.navigator.userAgent.includes('Electron');
+    const isElectron = window.electronAPI !== undefined;
     console.log('Running in Electron:', isElectron);
     
     if (isElectron) {
@@ -28,9 +28,31 @@ function App() {
     }
   }, []);
 
-  const setupElectronIPC = () => {
-    // Will implement IPC communication here
+  const setupElectronIPC = async () => {
     console.log('Setting up Electron IPC...');
+    
+    if (!window.electronAPI) return;
+    
+    try {
+      // Get app info
+      const appInfo = await window.electronAPI.getAppInfo();
+      console.log('App info:', appInfo);
+      
+      // Set up event listeners
+      window.electronAPI.onNavigateToSettings(() => {
+        console.log('Navigate to settings requested');
+        setCurrentScreen('settings');
+      });
+      
+      window.electronAPI.onRefreshNews(() => {
+        console.log('Refresh news requested');
+        // TODO: Implement news refresh
+      });
+      
+      console.log('✅ Electron IPC setup complete');
+    } catch (error) {
+      console.error('❌ Error setting up Electron IPC:', error);
+    }
   };
 
   const navigateToStories = () => {

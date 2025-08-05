@@ -1,0 +1,109 @@
+/* App-specific styles matching lite version */
+.desktop-app {
+  min-height: 100vh;
+  background-color: #f4f1eb;
+}
+
+/* Screen transitions */
+.screen {
+  width: 100%;
+  min-height: 100vh;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.screen.entering {
+  opacity: 0;
+}
+
+.screen.entered {
+  opacity: 1;
+}
+
+.screen.exiting {
+  opacity: 1;
+}
+
+.screen.exited {
+  opacity: 0;
+}
+
+/* Desktop window controls area */
+.window-controls {
+  height: 30px;
+  background: #493641;
+  -webkit-app-region: drag;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.window-control {
+  -webkit-app-region: no-drag;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-left: 8px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.window-control:hover {
+  opacity: 1;
+}
+
+.window-control.close {
+  background: #ff5f57;
+}
+
+.window-control.minimize {
+  background: #ffbd2e;
+}
+
+.window-control.maximize {
+  background: #28ca42;
+}
+
+/* Content area */
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Status bar */
+.status-bar {
+  height: 25px;
+  background: #efe9e1;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  font-size: 0.8rem;
+  border-top: 1px solid #d4c8bf;
+}
+
+.status-text {
+  flex: 1;
+  color: #493641;
+  opacity: 0.7;
+}
+
+.status-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.status-button {
+  background: none;
+  border: none;
+  color: #493641;
+  cursor: pointer;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.status-button:hover {
+  opacity: 1;
+}

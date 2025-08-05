@@ -1,0 +1,27 @@
+name: newsbot
+channels:
+  - pytorch
+  - huggingface
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - sqlite
+  - requests
+  - beautifulsoup4
+  - lxml
+  - feedparser
+  - numpy
+  - pandas
+  - scikit-learn
+  - pip:
+    - fastapi
+    - uvicorn[standard]
+    - transformers
+    - torch
+    - sentence-transformers
+    - faiss-cpu
+    - python-multipart
+    - jinja2
+    - aiofiles

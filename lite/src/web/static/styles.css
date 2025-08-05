@@ -1,0 +1,477 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Hanken Grotesk', sans-serif;
+    line-height: 1.6;
+    color: #493641;
+    overflow-x: hidden;
+}
+
+/* Screen management with smooth crossfade transitions */
+.screen {
+    display: none;
+    min-height: 100vh;
+    width: 100%;
+    opacity: 1;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* Ensure smooth transitions without white background */
+body {
+    background-color: #f4f1eb; /* Match home screen background */
+}
+
+/* Screen-specific backgrounds to prevent flashing */
+#home-screen,
+#stories-screen {
+    background-color: #f4f1eb;
+}
+
+#story-screen .summary-section,
+#story-screen .references-section {
+    background-color: #f4f1eb;
+}
+
+#story-screen .details-section {
+    background-color: #efe9e1;
+}
+
+/* Home Screen - background already defined above */
+
+.home-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.app-title {
+    font-size: 4rem;
+    font-weight: 600;
+    color: #493641;
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.view-news-btn {
+    background-color: #493641;
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    font-family: 'Hanken Grotesk', sans-serif;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.view-news-btn:hover {
+    opacity: 0.9;
+}
+
+/* Stories Screen */
+#stories-screen {
+    background-color: #f4f1eb;
+}
+
+.stories-container {
+    display: flex;
+    min-height: 100vh;
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.stories-sidebar {
+    flex: 0 0 300px;
+    padding-right: 4rem;
+}
+
+.stories-title {
+    font-size: 3rem;
+    font-weight: 600;
+    color: #493641;
+    line-height: 1.1;
+}
+
+.stories-list {
+    flex: 1;
+    padding-left: 2rem;
+}
+
+.story-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 3rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.story-item:hover {
+    opacity: 0.7;
+}
+
+.story-number {
+    font-size: 3rem;
+    font-weight: 600;
+    color: #493641;
+    margin-right: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.story-content {
+    flex: 1;
+}
+
+.story-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #493641;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.story-subtitle {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #493641;
+    opacity: 0.8;
+    line-height: 1.4;
+}
+
+.loading {
+    font-size: 1.2rem;
+    color: #493641;
+    text-align: center;
+    padding: 4rem;
+}
+
+/* Single Scrollable Story Screen */
+#story-screen {
+    display: block;
+    position: relative; /* Establish positioning context for loading overlay */
+}
+
+/* Ensure story screen doesn't interfere with other screens when inactive */
+#story-screen:not(.active) {
+    display: none;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+}
+
+/* Story Loading State - scoped to story screen only */
+
+.story-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f4f1eb;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.3s ease-out;
+    z-index: 2;
+}
+
+.story-loading.hidden {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.loading-container {
+    text-align: center;
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    color: #493641;
+    opacity: 0.8;
+}
+
+/* Story Content Wrapper */
+.story-content-wrapper {
+    position: relative;
+    opacity: 0;
+    transition: opacity 0.3s ease-in;
+    z-index: 1;
+}
+
+.story-content-wrapper.loaded {
+    opacity: 1;
+}
+
+/* Summary Section */
+.summary-section {
+    background-color: #f4f1eb;
+    min-height: 100vh;
+    padding: 4rem 0;
+}
+
+.summary-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.summary-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 3rem;
+}
+
+.summary-header .story-number {
+    font-size: 4rem;
+    font-weight: 600;
+    color: #493641;
+    margin-right: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.story-title-section {
+    flex: 1;
+}
+
+.summary-header .story-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #493641;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.summary-header .story-subtitle {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: #493641;
+    opacity: 0.8;
+    line-height: 1.4;
+}
+
+.summary-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #493641;
+    padding-left: 6rem;
+    white-space: pre-line;
+}
+
+/* Details Section */
+.details-section {
+    background-color: #efe9e1;
+    min-height: 100vh;
+    padding: 4rem 0;
+}
+
+.details-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem 3rem;
+    margin-bottom: 4rem;
+}
+
+.detail-section {
+    padding: 0;
+}
+
+.detail-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #493641;
+    margin-bottom: 1.5rem;
+}
+
+.detail-bullets {
+    list-style: none;
+    padding: 0;
+}
+
+.detail-bullets li {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #493641;
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.detail-bullets li::before {
+    content: "•";
+    color: #493641;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* Political Perspectives */
+.perspectives-section {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 2px solid #493641;
+}
+
+.perspective-block {
+    margin-bottom: 3rem;
+}
+
+.perspective-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #493641;
+    margin-bottom: 1rem;
+}
+
+.perspective-text {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #493641;
+    opacity: 0.9;
+}
+
+/* References Section */
+.references-section {
+    background-color: #f4f1eb;
+    min-height: 100vh;
+    padding: 4rem 0;
+}
+
+.references-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.references-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 3rem;
+}
+
+.references-header .story-number {
+    font-size: 4rem;
+    font-weight: 600;
+    color: #493641;
+    margin-right: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.references-content {
+    padding-left: 6rem;
+}
+
+.references-list {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #493641;
+}
+
+.reference-item {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.reference-item::before {
+    content: "•";
+    color: #493641;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.reference-source {
+    font-weight: 600;
+}
+
+.reference-title {
+    font-style: italic;
+    margin: 0 0.5rem;
+}
+
+.reference-link {
+    color: #493641;
+    text-decoration: underline;
+    opacity: 0.8;
+}
+
+.reference-link:hover {
+    opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .stories-container {
+        flex-direction: column;
+        padding: 2rem 1rem;
+    }
+    
+    .stories-sidebar {
+        flex: none;
+        padding-right: 0;
+        margin-bottom: 2rem;
+    }
+    
+    .stories-list {
+        padding-left: 0;
+    }
+    
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+    
+    .summary-content,
+    .references-content {
+        padding-left: 0;
+    }
+    
+    .app-title {
+        font-size: 3rem;
+    }
+    
+    .stories-title {
+        font-size: 2.5rem;
+    }
+    
+    .summary-header .story-title {
+        font-size: 2rem;
+    }
+    
+    /* Mobile adjustments for single scrollable layout */
+    .summary-section,
+    .details-section,
+    .references-section {
+        padding: 2rem 0;
+        min-height: auto;
+    }
+    
+    .summary-container,
+    .details-container,
+    .references-container {
+        padding: 0 1rem;
+    }
+}

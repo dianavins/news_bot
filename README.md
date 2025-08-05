@@ -1,19 +1,45 @@
-# news_bot
+# News Bot - Anti-Echo Chamber News Aggregation
 
-Searches the web on left, right, and centrist news sources, gives you 1) an objective view of the news and 2) what each side is seeing of the same news.
+An intelligent news aggregation system that combats echo chambers by presenting balanced news from multiple political perspectives. Utilizes identity-safe framing techniques to reduce political defensiveness and promote objective news consumption.
 
-The point is to give unopinionated news and prevent people's internet echochambers by exposing them to the various different sides of the top headliners.
+## 🚀 Project Structure
 
-This creates a webapp that is run locally.
+This repository contains two versions:
 
-## Parts:
+### 📱 Desktop App (Main) - *In Development*
+Professional desktop application with:
+- System tray integration
+- Configurable refresh notifications (1hr/12hr/1day/1week)  
+- Compact popup windows
+- Auto-updates and professional distribution
+- Built with Electron + React + SQLite
 
-- frontend:
-- Backend:
-- AI:
-  - LLM model is TinyLlama/TinyLlama-1.1B-Chat-v1.0 or HuggingFaceTB/SmolLM3-3B
-  - RAG by online search
+### 🌐 Lite Web Version (`lite/` folder)
+Lightweight web interface featuring:
+- RSS news collection from 12+ sources across political spectrum
+- Event-specific story clustering  
+- Comprehensive multi-paragraph summaries with source citations
+- Single scrollable story interface with smooth transitions
+- FastAPI backend with SQLite database
 
-## Usage:
+## 🎯 Core Features
 
-To install and run, run these commands in terminal:
+- **Anti-Echo Chamber Design**: Presents news from left, center, and right perspectives
+- **Identity-Safe Framing**: Uses techniques to reduce political defensiveness
+- **Event-Specific Clustering**: Groups articles by specific events, not broad topics
+- **Comprehensive Summaries**: 2-3 paragraph summaries with source citations
+- **Political Balance Scoring**: Measures diversity of political perspectives per story
+
+## 🛠 Technology Stack
+
+- **Backend**: Python, FastAPI, SQLite
+- **Desktop**: Electron, React, Electron Builder
+- **Web**: HTML5, CSS3, Vanilla JavaScript
+- **Data Processing**: TF-IDF clustering, RSS parsing
+- **Future**: LLM integration (TinyLlama/SmolLM3-3B)
+
+## 📖 Quick Start
+
+For the **lite web version**, see [`lite/README.md`](lite/README.md)
+
+For the **desktop app** - coming soon!

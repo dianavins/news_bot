@@ -2,24 +2,31 @@ const { app, BrowserWindow, Menu, Tray, ipcMain, dialog, shell } = require('elec
 const { autoUpdater } = require('electron-updater');
 const isDev = require('electron-is-dev');
 const path = require('path');
+const DatabaseService = require('../src/services/database');
 
 class NewsBot {
   constructor() {
     this.mainWindow = null;
     this.tray = null;
     this.isQuitting = false;
+    this.database = new DatabaseService();
     
-    // Window configuration
+    // Window configuration - force position and visibility
     this.windowConfig = {
       width: 900,
       height: 700,
       minWidth: 600,
       minHeight: 500,
-      show: false, // Don't show until ready
+      show: true, // Show immediately
+      x: 100, // Force position on screen
+      y: 100,
+      center: true, // Center the window
+      alwaysOnTop: false, // Remove always on top
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
         enableRemoteModule: false,
+        webSecurity: false, // Allow local file loading
         preload: path.join(__dirname, 'preload.js')
       },
       titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
@@ -45,14 +52,48 @@ class NewsBot {
     });
   }
 
+  async initializeDatabase() {
+    console.log('🗄️ Initializing database...');
+    
+    try {
+      await this.database.initialize();
+      
+      // Check if we need to migrate data from lite version
+      const stats = this.database.getStats();
+      console.log(`📊 Database stats: ${stats.articles} articles, ${stats.stories} stories`);
+      
+      // If database is empty, try to copy from lite version
+      if (stats.articles === 0 && stats.stories === 0) {
+        const liteDbPath = path.join(__dirname, '../lite/data/news.db');
+        const fs = require('fs');
+        
+        if (fs.existsSync(liteDbPath)) {
+          console.log('🔄 Migrating data from lite version...');
+          const migrationResult = await this.database.copyFromLiteDatabase(liteDbPath);
+          console.log(`✅ Migrated ${migrationResult.articles} articles and ${migrationResult.stories} stories`);
+        } else {
+          console.log('ℹ️ No lite database found, starting with empty database');
+        }
+      }
+      
+    } catch (error) {
+      console.error('❌ Database initialization failed:', error);
+      // Don't crash the app, but log the error
+      dialog.showErrorBox('Database Error', `Failed to initialize database: ${error.message}`);
+    }
+  }
+
   async onReady() {
-    console.log('📱 App ready, creating main window...');
+    console.log('📱 App ready, initializing services...');
+    
+    // Initialize database first
+    await this.initializeDatabase();
     
     // Create main window
     await this.createMainWindow();
     
-    // Set up system tray
-    await this.createSystemTray();
+    // Set up system tray - disabled for now to prevent window hiding issues
+    // await this.createSystemTray();
     
     // Set up application menu
     this.createApplicationMenu();
@@ -69,20 +110,35 @@ class NewsBot {
   }
 
   async createMainWindow() {
+    console.log('🪟 Creating browser window with config:', this.windowConfig);
+    
     // Create the browser window
     this.mainWindow = new BrowserWindow(this.windowConfig);
     
-    // Load the app
-    const startUrl = isDev 
-      ? 'http://localhost:3000' 
-      : `file://${path.join(__dirname, '../build/index.html')}`;
+    console.log('🪟 Window created, bounds:', this.mainWindow.getBounds());
+    console.log('🪟 Window visible:', this.mainWindow.isVisible());
+    console.log('🪟 Window minimized:', this.mainWindow.isMinimized());
+    
+    // Load the app - force production mode for now
+    const startUrl = `file://${path.join(__dirname, '../build/index.html')}`;
+    console.log('🌐 Loading URL:', startUrl);
     
     await this.mainWindow.loadURL(startUrl);
     
-    // Open DevTools in development
-    if (isDev) {
-      this.mainWindow.webContents.openDevTools();
-    }
+    console.log('🌐 URL loaded, window still visible:', this.mainWindow.isVisible());
+    
+    // Force window to front
+    this.mainWindow.focus();
+    this.mainWindow.show(); // Force show again
+    console.log('🎯 Window focused and shown');
+    
+    // Open DevTools to debug blank page
+    this.mainWindow.webContents.openDevTools();
+    
+    // Log any console errors
+    this.mainWindow.webContents.on('console-message', (event, level, message) => {
+      console.log('Browser Console:', level, message);
+    });
     
     // Handle window events
     this.mainWindow.on('ready-to-show', () => {
@@ -107,12 +163,9 @@ class NewsBot {
       }
     });
     
-    this.mainWindow.on('close', (event) => {
-      if (!this.isQuitting && this.tray) {
-        event.preventDefault();
-        this.mainWindow.hide();
-        return false;
-      }
+    // Normal close behavior since no system tray
+    this.mainWindow.on('close', () => {
+      this.mainWindow = null;
     });
     
     console.log('🪟 Main window created and configured');
@@ -240,10 +293,13 @@ class NewsBot {
   setupIPC() {
     // Handle app info requests
     ipcMain.handle('get-app-info', () => {
+      const dbStats = this.database.getStats();
       return {
         version: app.getVersion(),
         platform: process.platform,
-        isDev: isDev
+        isDev: isDev,
+        electronVersion: process.versions.electron,
+        database: dbStats
       };
     });
     
@@ -260,23 +316,93 @@ class NewsBot {
       }
     });
     
-    // Handle news refresh
+    // Handle news operations
     ipcMain.handle('refresh-news', async () => {
       return await this.refreshNews();
+    });
+
+    ipcMain.handle('get-stories', async (event, limit = 10, offset = 0) => {
+      try {
+        const stories = this.database.getStories(limit, offset);
+        console.log(`📰 Retrieved ${stories.length} stories for UI`);
+        return stories;
+      } catch (error) {
+        console.error('Error getting stories:', error);
+        return [];
+      }
+    });
+
+    ipcMain.handle('get-story', async (event, storyId) => {
+      try {
+        const story = this.database.getStory(storyId);
+        console.log(`📖 Retrieved story: ${story ? story.title : 'Not found'}`);
+        return story;
+      } catch (error) {
+        console.error('Error getting story:', error);
+        return null;
+      }
+    });
+
+    ipcMain.handle('get-database-stats', async () => {
+      try {
+        return this.database.getStats();
+      } catch (error) {
+        console.error('Error getting database stats:', error);
+        return { error: error.message };
+      }
     });
     
     // Handle settings
     ipcMain.handle('get-settings', async () => {
-      // TODO: Implement settings storage
+      // TODO: Implement persistent settings storage
       return {
         refreshInterval: '12h',
-        notifications: true
+        notifications: true,
+        minimizeToTray: true,
+        autoStart: false,
+        theme: 'light'
       };
     });
     
     ipcMain.handle('save-settings', async (event, settings) => {
-      // TODO: Implement settings storage
+      // TODO: Implement persistent settings storage
       console.log('💾 Saving settings:', settings);
+      return { success: true };
+    });
+
+    // Handle external operations
+    ipcMain.handle('open-external', async (event, url) => {
+      try {
+        await shell.openExternal(url);
+        return { success: true };
+      } catch (error) {
+        console.error('Error opening external URL:', error);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle('show-logs', async () => {
+      // TODO: Implement log viewer
+      console.log('📋 Opening logs...');
+      return { success: true };
+    });
+
+    ipcMain.handle('show-about', async () => {
+      const aboutInfo = {
+        name: 'News Bot',
+        version: app.getVersion(),
+        electron: process.versions.electron,
+        node: process.versions.node,
+        chrome: process.versions.chrome
+      };
+      
+      dialog.showMessageBox(this.mainWindow, {
+        type: 'info',
+        title: 'About News Bot',
+        message: 'News Bot Desktop',
+        detail: `Version: ${aboutInfo.version}\nElectron: ${aboutInfo.electron}\nNode: ${aboutInfo.node}\nChrome: ${aboutInfo.chrome}\n\nAnti-Echo Chamber News Aggregation`
+      });
+      
       return { success: true };
     });
     

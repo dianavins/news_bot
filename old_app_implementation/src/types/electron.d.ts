@@ -18,8 +18,18 @@ export interface ElectronAPI {
     success: boolean;
     message: string;
   }>;
-  getStories: () => Promise<any[]>;
+  getStories: (limit?: number, offset?: number) => Promise<any[]>;
   getStory: (id: string) => Promise<any>;
+  
+  // Database operations
+  getDatabaseStats: () => Promise<{
+    articles: number;
+    stories: number;
+    sourceBreakdown: Record<string, number>;
+    recentArticles: number;
+    dbPath: string;
+    lastUpdate: string;
+  }>;
   
   // Settings
   getSettings: () => Promise<{

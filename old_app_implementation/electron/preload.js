@@ -12,10 +12,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
   
   // News operations
   refreshNews: () => ipcRenderer.invoke('refresh-news'),
+  getStories: (limit, offset) => ipcRenderer.invoke('get-stories', limit, offset),
+  getStory: (storyId) => ipcRenderer.invoke('get-story', storyId),
+  
+  // Database operations
+  getDatabaseStats: () => ipcRenderer.invoke('get-database-stats'),
   
   // Settings
   getSettings: () => ipcRenderer.invoke('get-settings'),
   saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
+  
+  // External operations
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
+  showLogs: () => ipcRenderer.invoke('show-logs'),
+  showAbout: () => ipcRenderer.invoke('show-about'),
   
   // Listen to main process messages
   onNavigateToSettings: (callback) => ipcRenderer.on('navigate-to-settings', callback),

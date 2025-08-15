@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CommonGround - New Stories</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+            background-color: white;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .popup-container {
+            max-width: 380px;
+            background: white;
+        }
+        
+        .stories-list {
+            margin-bottom: 20px;
+        }
+        
+        .story-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            font-size: 15px;
+            line-height: 1.4;
+            color: #2c2c2c;
+        }
+        
+        .story-number {
+            font-weight: 600;
+            margin-right: 10px;
+            flex-shrink: 0;
+            color: #6b5b73;
+        }
+        
+        .story-title {
+            font-weight: 500;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+        }
+        
+        .view-button {
+            width: 100%;
+            background-color: #6b5b73;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+        
+        .view-button:hover {
+            background-color: #5a4a5f;
+            transform: translateY(-1px);
+        }
+        
+        .view-button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-container">
+        <div class="stories-list" id="stories-list">
+            <!-- Stories will be populated by JavaScript -->
+        </div>
+        <button class="view-button" id="view-news-btn">VIEW THE NEWS</button>
+    </div>
+    
+    <script>
+        // Listen for story data from main process
+        window.addEventListener('DOMContentLoaded', () => {
+            // Request stories from main process
+            window.electronAPI.getNewStories();
+        });
+        
+        // Handle view news button click
+        document.getElementById('view-news-btn').addEventListener('click', () => {
+            window.electronAPI.openMainWindow();
+            window.close();
+        });
+        
+        // Populate stories when received
+        window.electronAPI.onNewStories((stories) => {
+            const storiesList = document.getElementById('stories-list');
+            const maxStories = 5;
+            
+            const storiesHTML = stories.slice(0, maxStories).map((story, index) => {
+                // Truncate title to fit in popup
+                const truncatedTitle = story.title.length > 40 
+                    ? story.title.substring(0, 40) + '...' 
+                    : story.title;
+                
+                return `
+                    <div class="story-item">
+                        <span class="story-number">${index + 1}.</span>
+                        <span class="story-title">${truncatedTitle}</span>
+                    </div>
+                `;
+            }).join('');
+            
+            storiesList.innerHTML = storiesHTML;
+        });
+    </script>
+</body>
+</html>

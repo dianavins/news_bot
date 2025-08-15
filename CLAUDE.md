@@ -5,3 +5,4 @@ use conda environments
 ensure most effective and simple workflow, fewer shorter files
 question me throughout the work process and double check work for highest efficiency and speed of work
 research solutions and give me non obvious ideas/solutions in response when I give ideas/tasks
+NO UNICODE CHARACTER USAGE

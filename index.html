@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CommonGround</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lite/src/web/static/styles.css">
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+            background-color: #f5f3f0;
+            min-height: 100vh;
+        }
+        
+        /* Home Screen - Match PDF exactly */
+        #home-screen.active {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f5f3f0;
+            overflow: hidden;
+        }
+        
+        .home-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 40px;
+        }
+        
+        .app-title {
+            font-size: 64px;
+            font-weight: 900;
+            color: #2c2c2c;
+            margin-bottom: 60px;
+            letter-spacing: -2px;
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+        
+        .view-news-btn {
+            background-color: #6b5b73;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 40px;
+            font-family: 'Hanken Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .view-news-btn:hover {
+            background-color: #5a4a5f;
+            transform: translateY(-2px);
+        }
+        
+        /* Refresh Controls */
+        .refresh-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .refresh-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+            letter-spacing: 1px;
+        }
+        
+        .refresh-dropdown {
+            position: relative;
+        }
+        
+        .refresh-current {
+            background-color: #6b5b73;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Hanken Grotesk', sans-serif;
+            letter-spacing: 0.5px;
+        }
+        
+        .refresh-current:hover {
+            background-color: #5a4a5f;
+        }
+        
+        .refresh-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-top: 5px;
+            z-index: 1000;
+            list-style: none;
+            overflow: hidden;
+        }
+        
+        .refresh-options.hidden {
+            display: none;
+        }
+        
+        .refresh-options li {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c2c2c;
+        }
+        
+        .refresh-options li:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .refresh-options li.selected {
+            background-color: #6b5b73;
+            color: white;
+        }
+        
+        
+        /* Back button styles for other screens */
+        .back-button {
+            position: fixed !important;
+            top: 25px !important;
+            left: 25px !important;
+            z-index: 99999 !important;
+            background: none !important;
+            border: none !important;
+            font-size: 40px !important;
+            font-weight: normal !important;
+            color: #493641 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            font-family: 'Comfortaa', sans-serif !important;
+            padding: 0 !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+        }
+        
+        .back-button:hover {
+            color: #6b5b73 !important;
+            transform: scale(1.1) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Screen -->
+    <div id="home-screen" class="screen active">
+        <div class="home-container">
+            <h1 class="app-title">CommonGround</h1>
+            <button id="view-news-btn" class="view-news-btn">VIEW THE NEWS</button>
+            
+            <!-- Refresh Rate Controls -->
+            <div class="refresh-controls">
+                <span class="refresh-label">REFRESH RATE:</span>
+                <div class="refresh-dropdown">
+                    <button class="refresh-current" id="refresh-current">12 HR ▼</button>
+                    <ul class="refresh-options hidden" id="refresh-options">
+                        <li data-interval="1">1 HR</li>
+                        <li data-interval="6">6 HR</li>
+                        <li data-interval="12">12 HR</li>
+                        <li data-interval="24">24 HR</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stories Screen -->
+    <div id="stories-screen" class="screen">
+        <div class="stories-container">
+            <div class="stories-sidebar">
+                <h2 class="stories-title">TODAY'S<br>NEWS</h2>
+            </div>
+            <div class="stories-list" id="stories-list">
+                <!-- Stories will be loaded dynamically -->
+                <div class="loading">Loading stories...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Single Scrollable Story Screen -->
+    <div id="story-screen" class="screen">
+        <!-- Back Button -->
+        <button id="back-to-stories" class="back-button"><</button>
+        
+        <!-- Loading State -->
+        <div id="story-loading" class="story-loading hidden">
+            <div class="loading-container">
+                <div class="loading-text">Loading story...</div>
+            </div>
+        </div>
+        
+        <!-- Story Content -->
+        <div id="story-content" class="story-content-wrapper">
+            <!-- Summary Section -->
+            <div class="summary-section">
+                <div class="summary-container">
+                    <div class="summary-header">
+                        <span class="story-number" id="summary-number">1.</span>
+                        <div class="story-title-section">
+                            <h1 class="story-title" id="summary-title">EVENT TITLE GOES HERE</h1>
+                            <p class="story-subtitle" id="summary-subtitle">Subtitle goes here, a little more detailed</p>
+                        </div>
+                    </div>
+                    <div class="summary-content" id="summary-content">
+                        <p>Summary text will be loaded here...</p>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Details Section -->
+        <div class="details-section">
+            <div class="details-container">
+                <div class="details-grid">
+                    <div class="detail-section">
+                        <h3 class="detail-title">📚 CONTEXT</h3>
+                        <ul class="detail-bullets" id="context-bullets">
+                            <li>Context points will be loaded here</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-title">⚖️ PRACTICAL SOLUTIONS</h3>
+                        <ul class="detail-bullets" id="practical-bullets">
+                            <li>Practical solution points will be loaded here</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-title">❤️ SOCIAL VALUES</h3>
+                        <ul class="detail-bullets" id="social-bullets">
+                            <li>Social value points will be loaded here</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-title">🏢 ECONOMIC IMPACT</h3>
+                        <ul class="detail-bullets" id="economic-bullets">
+                            <li>Economic impact points will be loaded here</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Political Perspectives Section -->
+                <div class="perspectives-section">
+                    <div class="perspective-block">
+                        <h3 class="perspective-title">Conservative Perspective</h3>
+                        <p class="perspective-text" id="conservative-perspective">Conservative viewpoint will be loaded here...</p>
+                    </div>
+                    
+                    <div class="perspective-block">
+                        <h3 class="perspective-title">Progressive Perspective</h3>
+                        <p class="perspective-text" id="progressive-perspective">Progressive viewpoint will be loaded here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- References Section -->
+        <div class="references-section">
+            <div class="references-container">
+                <div class="references-header">
+                    <span class="story-number" id="references-number">1.</span>
+                    <div class="story-title-section">
+                        <h1 class="story-title">REFERENCES</h1>
+                        <p class="story-subtitle">Source articles used in this analysis</p>
+                    </div>
+                </div>
+                <div class="references-content" id="references-content">
+                    <div class="references-list" id="references-list">
+                        <!-- References will be loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script src="app-electron.js"></script>
+</body>
+</html>

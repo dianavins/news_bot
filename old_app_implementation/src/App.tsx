@@ -55,14 +55,32 @@ function App() {
     }
   };
 
-  const navigateToStories = () => {
+  const navigateToStories = async () => {
     setCurrentScreen('stories');
-    // TODO: Load stories from database
+    // Load stories from database
+    if (window.electronAPI) {
+      try {
+        const storiesData = await window.electronAPI.getStories(10, 0);
+        setStories(storiesData);
+        console.log(`Loaded ${storiesData.length} stories from database`);
+      } catch (error) {
+        console.error('Failed to load stories:', error);
+      }
+    }
   };
 
-  const navigateToStory = (storyId: string) => {
+  const navigateToStory = async (storyId: string) => {
     setCurrentScreen('story');
-    // TODO: Load specific story
+    // Load specific story
+    if (window.electronAPI) {
+      try {
+        const storyData = await window.electronAPI.getStory(storyId);
+        setCurrentStory(storyData);
+        console.log(`Loaded story: ${storyData ? storyData.title : 'Not found'}`);
+      } catch (error) {
+        console.error('Failed to load story:', error);
+      }
+    }
   };
 
   const navigateToSettings = () => {
@@ -87,6 +105,7 @@ function App() {
                   stories={stories} 
                   onStorySelect={navigateToStory}
                   onBack={navigateToHome}
+                  onSettings={navigateToSettings}
                 />
               )}
               {currentScreen === 'story' && (

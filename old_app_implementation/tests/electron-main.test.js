@@ -8,6 +8,7 @@ jest.mock('electron', () => ({
     on: jest.fn(),
     getName: jest.fn(() => 'News Bot'),
     getVersion: jest.fn(() => '1.0.0'),
+    getPath: jest.fn(() => require('path').join(__dirname, '../test-data')),
     quit: jest.fn()
   },
   BrowserWindow: jest.fn(() => ({
